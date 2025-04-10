@@ -22,13 +22,13 @@ function getVideoNoWaterMark(string $method, string $tiktok_url, int $hd = 1): a
     // Build query parameters for the API call
     $params = [
         'url'  => $tiktok_url,
-        'hd'   => $hd   // API method parameter (e.g., "get")
+        'hd'   => $hd,       // 1 for HD, 0 for normal quality
     ];
 
     // Construct the API URL with parameters
     $api_url = $path_api_get_video_no_watermark . '?' . http_build_query($params);
 
-    // Retrieve the response using file_get_contents
+    // Retrieve the API response using file_get_contents (without using cURL)
     $response = file_get_contents($api_url);
     if ($response === false) {
         return ['error' => 'Failed to retrieve data from API'];
@@ -52,12 +52,13 @@ function sendMessage($chat_id, $text)
         'chat_id' => $chat_id,
         'text'    => $text
     ];
-    // Using file_get_contents for sending the message request
+
+    // Send the message using file_get_contents
     file_get_contents($url . "?" . http_build_query($data));
 }
 
 /**
- * Send a video message via Telegram.
+ * Send a video via Telegram.
  *
  * @param int    $chat_id   The recipient chat ID.
  * @param string $video_url The video URL to send.
@@ -71,15 +72,15 @@ function sendVideo($chat_id, $video_url, $caption = '')
         'video'   => $video_url,
         'caption' => $caption
     ];
+
+    // Send the video using file_get_contents
     file_get_contents($url . "?" . http_build_query($data));
 }
 
-/**
- * Main logic to process incoming Telegram updates.
- */
+// Process the incoming Telegram update
 $update = json_decode(file_get_contents("php://input"), true);
 
-// Validate the incoming update structure
+// Exit if the update format is invalid or missing a message
 if (!$update || !isset($update['message'])) {
     exit;
 }
@@ -87,21 +88,25 @@ if (!$update || !isset($update['message'])) {
 $chat_id = $update['message']['chat']['id'];
 $message_text = $update['message']['text'] ?? '';
 
-// Process the message if it contains text
+// Proceed only if the message contains text
 if ($message_text) {
-    // Check if the message includes "tiktok" (case insensitive)
+    // Check if the message likely contains a TikTok URL
     if (stripos($message_text, 'tiktok') !== false) {
-        // Retrieve the video URL from TikWM API.
-        // Change the third parameter to 0 for normal quality if needed.
+        // Retrieve the video URL from the TikWM API.
+        // The third parameter '1' indicates HD mode; change to '0' for normal quality.
         $result = getVideoNoWaterMark("get", $message_text, 1);
 
-        // Check if the API response contains the expected video URL key
-        if (isset($result['data']) && !empty($result['data'])) {
-            sendMessage(($chat_id), "Downloading your TikTok video...");
-            sendMessage($chat_id, $result['data']->wmplay);
-            // Send the video to the user
-           // sendVideo($chat_id, $result['video'], "Here is your TikTok video without watermark!");
+        // Verify the API call was successful and the expected video URL is present
+        if (
+            isset($result['msg']) && $result['msg'] == 'success' &&
+            isset($result['data']['vmplay']) && !empty($result['data']['vmplay'])
+        ) {
+
+            // Extract the video URL from the API response
+            $video_url = $result['data']['vmplay'];
+            sendVideo($chat_id, $video_url, "Here is your TikTok video without watermark!");
         } else {
+            // In case of error or unexpected API response structure, notify the user
             sendMessage($chat_id, "Sorry, I couldn't download the video. Please verify the URL or try again later.");
         }
     } else {
