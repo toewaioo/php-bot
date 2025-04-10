@@ -45,15 +45,32 @@ function getVideoNoWaterMark(string $method, string $tiktok_url, int $hd = 1): a
  * @param int    $chat_id The recipient chat ID.
  * @param string $text    The text message to send.
  */
-function sendMessage($chat_id, $text)
+function sendMessage($chat_id, $text, $reply_to_msg_id = null)
 {
     $url = API_URL . "sendMessage";
     $data = [
         'chat_id' => $chat_id,
         'text'    => $text
     ];
+    if ($reply_to_msg_id !== null) {
+        $data['reply_to_message_id'] = $reply_to_msg_id;
+    }
+    file_get_contents($url . "?" . http_build_query($data));
+}
 
-    // Send the message using file_get_contents
+/**
+ * Send a chat action to display a status in Telegram's action bar.
+ *
+ * @param int    $chat_id The recipient chat ID.
+ * @param string $action  The action to display (e.g., "upload_video").
+ */
+function sendChatAction($chat_id, $action)
+{
+    $url = API_URL . "sendChatAction";
+    $data = [
+        'chat_id' => $chat_id,
+        'action'  => $action
+    ];
     file_get_contents($url . "?" . http_build_query($data));
 }
 /**
@@ -73,9 +90,9 @@ function sendAudio($chat_id, $audio_url, $reply_to_msg_id = null, $caption = '')
         'caption' => $caption
     ];
     // If a reply_to_message_id is provided, set it
-    if ($reply_to_msg_id !== null) {
-        $data['reply_to_message_id'] = $reply_to_msg_id;
-    }
+    //if ($reply_to_msg_id !== null) {
+    //     $data['reply_to_message_id'] = $reply_to_msg_id;
+    // }
     file_get_contents($url . "?" . http_build_query($data));
 }
 
@@ -86,7 +103,7 @@ function sendAudio($chat_id, $audio_url, $reply_to_msg_id = null, $caption = '')
  * @param string $video_url The video URL to send.
  * @param string $caption   (Optional) Caption for the video.
  */
-function sendVideo($chat_id, $video_url, $caption = '')
+function sendVideo($chat_id, $video_url, $caption = '', $reply_to_msg_id = null)
 {
     $url = API_URL . "sendVideo";
     $data = [
@@ -94,7 +111,9 @@ function sendVideo($chat_id, $video_url, $caption = '')
         'video'   => $video_url,
         'caption' => $caption
     ];
-
+    if ($reply_to_msg_id !== null) {
+        $data['reply_to_message_id'] = $reply_to_msg_id;
+    }
     // Send the video using file_get_contents
     file_get_contents($url . "?" . http_build_query($data));
 }
@@ -114,25 +133,25 @@ $message_id = $update['message']['message_id'];
 // Proceed only if the message contains text
 if ($message_text) {
     // Check if the message likely contains a TikTok URL
+    sendMessage($chat_id, "❤️", $message_id);
     if (stripos($message_text, 'tiktok') !== false) {
         // Retrieve the video URL from the TikWM API.
         // The third parameter '1' indicates HD mode; change to '0' for normal quality.
         $result = getVideoNoWaterMark("get", $message_text, 1);
 
-
         // Verify the API call was successful and the expected video URL is present
         if (
             isset($result['msg']) && $result['msg'] == 'success' &&
-            isset($result['data']['wmplay']) && !empty($result['data']['wmplay'])
+            isset($result['data']['play']) && !empty($result['data']['play'])
         ) {
 
             // Extract the video URL from the API response
-            $video_url = $result['data']['wmplay'];
-            sendVideo($chat_id, $video_url, "Here is your TikTok video without watermark!");
+            $video_url = $result['data']['play'];
+            sendVideo($chat_id, $video_url, $result['data']['title'], $message_id);
 
             $audio_url = $result['data']['music'];
             // Send the audio as a reply to the user's original message
-            sendAudio($chat_id, $audio_url, $message_id, "Here is the audio from your TikTok video.");
+            sendAudio($chat_id, $audio_url, $message_id, $result['data']['music_info']['title']);
         } else {
             // In case of error or unexpected API response structure, notify the user
             sendMessage($chat_id, "Sorry, I couldn't download the video. Please verify the URL or try again later.");
