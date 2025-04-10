@@ -95,6 +95,7 @@ if ($message_text) {
         // Retrieve the video URL from the TikWM API.
         // The third parameter '1' indicates HD mode; change to '0' for normal quality.
         $result = getVideoNoWaterMark("get", $message_text, 1);
+        sendMessage($chat_id, $result);
 
         // Verify the API call was successful and the expected video URL is present
         if (
