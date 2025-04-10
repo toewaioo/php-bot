@@ -118,6 +118,28 @@ function sendVideo($chat_id, $video_url, $caption = '', $reply_to_msg_id = null)
     file_get_contents($url . "?" . http_build_query($data));
 }
 
+/**
+ * (Hypothetical) React to a user's message.
+ *
+ * This function uses a theoretical endpoint "sendReaction"—adjust if you have access to an API version
+ * that supports message reactions. Otherwise, this is just a placeholder.
+ *
+ * @param int    $chat_id   The chat ID.
+ * @param int    $message_id The ID of the message to react to.
+ * @param string $reaction  The reaction emoji (e.g., "❤️").
+ */
+function sendReaction($chat_id, $message_id, $reaction)
+{
+    $url = API_URL . "sendReaction";
+    $data = [
+        'chat_id'   => $chat_id,
+        'message_id' => $message_id,
+        'reaction'  => $reaction
+    ];
+    file_get_contents($url . "?" . http_build_query($data));
+}
+
+
 // Process the incoming Telegram update
 $update = json_decode(file_get_contents("php://input"), true);
 
@@ -133,12 +155,12 @@ $message_id = $update['message']['message_id'];
 // Proceed only if the message contains text
 if ($message_text) {
     // Check if the message likely contains a TikTok URL
-    sendMessage($chat_id, "❤️", $message_id);
     if (stripos($message_text, 'tiktok') !== false) {
         // Retrieve the video URL from the TikWM API.
         // The third parameter '1' indicates HD mode; change to '0' for normal quality.
         $result = getVideoNoWaterMark("get", $message_text, 1);
-
+        sendChatAction($chat_id, "upload_video");
+        sendReaction($chat_id, $message_id, "❤️");
         // Verify the API call was successful and the expected video URL is present
         if (
             isset($result['msg']) && $result['msg'] == 'success' &&
