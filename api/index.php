@@ -98,7 +98,9 @@ if ($message_text) {
 
         // Check if the API response contains the expected video URL key
         if (isset($result['video']) && !empty($result['video'])) {
-            sendVideo($chat_id, $result['video'], "Here is your TikTok video without watermark!");
+            sendMessage(($chat_id), "Downloading your TikTok video...");
+            // Send the video to the user
+           // sendVideo($chat_id, $result['video'], "Here is your TikTok video without watermark!");
         } else {
             sendMessage($chat_id, "Sorry, I couldn't download the video. Please verify the URL or try again later.");
         }
