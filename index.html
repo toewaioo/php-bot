@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PHP Telegram Bot - TikTok Downloader</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+        color: #333;
+      }
+      header {
+        background-color: #4caf50;
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      main {
+        padding: 2rem;
+        max-width: 900px;
+        margin: 2rem auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      footer {
+        text-align: center;
+        padding: 1rem;
+        background-color: #4caf50;
+        color: white;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .code-block {
+        background-color: #e8e8e8;
+        padding: 1rem;
+        border-radius: 5px;
+        overflow-x: auto;
+        font-family: "Courier New", Courier, monospace;
+        margin: 1rem 0;
+      }
+      .btn {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background-color: #4caf50;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+      }
+      .btn:hover {
+        background-color: #45a049;
+      }
+      .highlight {
+        background-color: #dff0d8;
+        border-left: 5px solid #4caf50;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 5px;
+      }
+      .section-title {
+        color: #4caf50;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>PHP Telegram Bot - TikTok Downloader</h1>
+    </header>
+    <main>
+      <h2 class="section-title">About This Project</h2>
+      <p>
+        This project is a PHP-based Telegram bot that allows users to download
+        TikTok videos without a watermark. It uses the TikWM API to retrieve
+        video URLs and the Telegram Bot API to send messages and videos to
+        users.
+      </p>
+
+      <div class="highlight">
+        <strong>Note:</strong> Ensure you have a valid Telegram Bot API token
+        and TikWM API access to use this project.
+      </div>
+
+      <h3 class="section-title">Features</h3>
+      <ul>
+        <li>Download TikTok videos without watermark in HD quality.</li>
+        <li>Send videos directly to Telegram users.</li>
+        <li>Simple and efficient implementation using PHP.</li>
+        <li>Handles errors gracefully with user-friendly messages.</li>
+      </ul>
+
+      <h3 class="section-title">How It Works</h3>
+      <ol>
+        <li>The bot listens for incoming messages on Telegram.</li>
+        <li>
+          If a message contains a TikTok URL, the bot fetches the video using
+          the TikWM API.
+        </li>
+        <li>The video is then sent back to the user via Telegram.</li>
+      </ol>
+
+      <h3 class="section-title">Code Example</h3>
+      <div class="code-block">
+        <code>
+          &lt;?php<br />
+          // Example function to send a message via Telegram<br />
+          function sendMessage($chat_id, $text) {<br />
+          &nbsp;&nbsp;$url = API_URL . "sendMessage";<br />
+          &nbsp;&nbsp;$data = ['chat_id' => $chat_id, 'text' => $text];<br />
+          &nbsp;&nbsp;file_get_contents($url . "?" .
+          http_build_query($data));<br />
+          }<br />
+          ?&gt;
+        </code>
+      </div>
+
+      <h3 class="section-title">Get Started</h3>
+      <p>
+        To get started, clone the repository and follow the instructions in the
+        README file. You can also test the bot by sending a TikTok URL to your
+        Telegram bot.
+      </p>
+      <a href="https://github.com/your-repo-link" class="btn">View on GitHub</a>
+    </main>
+    <footer>
+      <p>
+        &copy; 2023 PHP Telegram Bot - TikTok Downloader |
+        <a
+          href="https://yourwebsite.com"
+          style="color: white; text-decoration: underline"
+          >Your Website</a
+        >
+      </p>
+    </footer>
+  </body>
+</html>
