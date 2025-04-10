@@ -22,8 +22,7 @@ function getVideoNoWaterMark(string $method, string $tiktok_url, int $hd = 1): a
     // Build query parameters for the API call
     $params = [
         'url'  => $tiktok_url,
-        'hd'   => $hd,       // 1 for HD, 0 for normal
-        'type' => $method    // API method parameter (e.g., "get")
+        'hd'   => $hd   // API method parameter (e.g., "get")
     ];
 
     // Construct the API URL with parameters
@@ -97,8 +96,9 @@ if ($message_text) {
         $result = getVideoNoWaterMark("get", $message_text, 1);
 
         // Check if the API response contains the expected video URL key
-        if (isset($result['video']) && !empty($result['video'])) {
+        if (isset($result['data']) && !empty($result['data'])) {
             sendMessage(($chat_id), "Downloading your TikTok video...");
+            sendMessage($chat_id, $result['data']->wmplay);
             // Send the video to the user
            // sendVideo($chat_id, $result['video'], "Here is your TikTok video without watermark!");
         } else {
