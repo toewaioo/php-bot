@@ -168,9 +168,13 @@ if ($message_text) {
         ) {
 
             // Extract the video URL from the API response
-            $video_url = $result['data']['play'];
-            sendVideo($chat_id, $video_url, $result['data']['title'], $message_id);
-
+            if (isset($result['data']['size']) && $result['data']['size'] > (20 * 1024 * 1024)) {
+                // If the video size exceeds 20 MB, inform the user
+                sendMessage($chat_id, "The video exceeds 20 MB and cannot be sent.", $message_id);
+            } else {
+                $video_url = $result['data']['play'];
+                sendVideo($chat_id, $video_url, $result['data']['title'], $message_id);
+            }
             $audio_url = $result['data']['music'];
             // Send the audio as a reply to the user's original message
             sendAudio($chat_id, $audio_url, $message_id, $result['data']['music_info']['title']);
