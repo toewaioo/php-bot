@@ -56,6 +56,28 @@ function sendMessage($chat_id, $text)
     // Send the message using file_get_contents
     file_get_contents($url . "?" . http_build_query($data));
 }
+/**
+ * Send an audio file via Telegram.
+ *
+ * @param int    $chat_id         The recipient chat ID.
+ * @param string $audio_url       The audio URL to send.
+ * @param int    $reply_to_msg_id (Optional) Message ID to which the audio reply is attached.
+ * @param string $caption         (Optional) Caption for the audio.
+ */
+function sendAudio($chat_id, $audio_url, $reply_to_msg_id = null, $caption = '')
+{
+    $url = API_URL . "sendAudio";
+    $data = [
+        'chat_id' => $chat_id,
+        'audio'   => $audio_url,
+        'caption' => $caption
+    ];
+    // If a reply_to_message_id is provided, set it
+    if ($reply_to_msg_id !== null) {
+        $data['reply_to_message_id'] = $reply_to_msg_id;
+    }
+    file_get_contents($url . "?" . http_build_query($data));
+}
 
 /**
  * Send a video via Telegram.
@@ -87,6 +109,7 @@ if (!$update || !isset($update['message'])) {
 
 $chat_id = $update['message']['chat']['id'];
 $message_text = $update['message']['text'] ?? '';
+$message_id = $update['message']['message_id'];
 
 // Proceed only if the message contains text
 if ($message_text) {
@@ -106,6 +129,10 @@ if ($message_text) {
             // Extract the video URL from the API response
             $video_url = $result['data']['wmplay'];
             sendVideo($chat_id, $video_url, "Here is your TikTok video without watermark!");
+
+            $audio_url = $result['data']['music'];
+            // Send the audio as a reply to the user's original message
+            sendAudio($chat_id, $audio_url, $message_id, "Here is the audio from your TikTok video.");
         } else {
             // In case of error or unexpected API response structure, notify the user
             sendMessage($chat_id, "Sorry, I couldn't download the video. Please verify the URL or try again later.");
