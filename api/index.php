@@ -95,16 +95,16 @@ if ($message_text) {
         // Retrieve the video URL from the TikWM API.
         // The third parameter '1' indicates HD mode; change to '0' for normal quality.
         $result = getVideoNoWaterMark("get", $message_text, 1);
-        sendMessage($chat_id, $result['data']->vmplay);
+
 
         // Verify the API call was successful and the expected video URL is present
         if (
             isset($result['msg']) && $result['msg'] == 'success' &&
-            isset($result['data']['vmplay']) && !empty($result['data']['vmplay'])
+            isset($result['data']['wmplay']) && !empty($result['data']['wmplay'])
         ) {
 
             // Extract the video URL from the API response
-            $video_url = $result['data']['vmplay'];
+            $video_url = $result['data']['wmplay'];
             sendVideo($chat_id, $video_url, "Here is your TikTok video without watermark!");
         } else {
             // In case of error or unexpected API response structure, notify the user
