@@ -73,9 +73,7 @@ if (!$apiKey) {
 $url = 'https://openrouter.ai/api/v1/chat/completions';
 $headers = [
     'Authorization: Bearer ' . $apiKey,
-    'Content-Type: application/json',
-    'HTTP-Referer: https://your-domain.com', // Update with your domain
-    'X-Title: Tarot Reader'                  // Update with your app name
+    'Content-Type: application/json'                 // Update with your app name
 ];
 
 $payload = [
